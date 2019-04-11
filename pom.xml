@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.hackaton</groupId>
-    <artifactId>calladocktor</artifactId>
+    <artifactId>therapistcall</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>calladocktor</name>
+    <name>therapistcall</name>
     <description>Demo project for Hackaton</description>
 
     <properties>
