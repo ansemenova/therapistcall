@@ -28,6 +28,9 @@ public class Sector {
 
     private Integer number;
 
+    @OneToOne
+    private Doctor doctor;
+
     @OneToMany(mappedBy = "sector", cascade = REMOVE)
     private List<Address> addresses;
 }

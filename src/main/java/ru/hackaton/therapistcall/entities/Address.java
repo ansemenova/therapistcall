@@ -23,6 +23,10 @@ public class Address {
 
     private Point point;
 
+    private String street;
+
+    private String house;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Sector sector;
 }
