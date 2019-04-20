@@ -11,6 +11,8 @@ import ru.hackaton.therapistcall.dtos.CoordinateDto;
 import ru.hackaton.therapistcall.dtos.CoordinatesDto;
 import ru.hackaton.therapistcall.dtos.PolyclinicRequestDto;
 import ru.hackaton.therapistcall.dtos.Position;
+import ru.hackaton.therapistcall.entities.Doctor;
+import ru.hackaton.therapistcall.entities.ExaminationAvailability;
 import ru.hackaton.therapistcall.entities.Polyclinic;
 import ru.hackaton.therapistcall.exception.NotFoundException;
 import ru.hackaton.therapistcall.repositories.PolyclinicRepository;
@@ -37,7 +39,7 @@ public class PolyclinicServiceImpl implements PolyclinicService {
     @Transactional(readOnly = true)
     public Set<Polyclinic> getPolyclinicsByCoordinates(PolyclinicRequestDto polyclinicRequestDto) {
         CoordinatesDto ownCoordinates = polyclinicRequestDto.getOwnCoordinates();
-        Point pointByCoordinates = geometryFactory.createPoint(new Coordinate(ownCoordinates.getLatitude(), ownCoordinates.getLongitude()));
+        Point pointByCoordinates = geometryFactory.createPoint(new Coordinate(ownCoordinates.getLongitude(), ownCoordinates.getLatitude()));
         return getPolyclinics(polyclinicRequestDto, pointByCoordinates);
     }
 
@@ -59,13 +61,38 @@ public class PolyclinicServiceImpl implements PolyclinicService {
 
     private Set<Polyclinic> getPolyclinics(PolyclinicRequestDto polyclinicRequestDto, Point pointByCoordinates) {
         if(polyclinicRequestDto.getDoctorSpeciality() != null) {
-            return polyclinicRepository.findNearest(pointByCoordinates.getX(), pointByCoordinates.getY()).flatMap(policlinic -> policlinic.getAvailabilities().stream())
-                    .filter(examinationAvailability -> examinationAvailability.getEquipped().equals(polyclinicRequestDto.getEquipped() && examinationAvailability.getExamination() == polyclinicRequestDto.getExaminationType())).map(examinationAvailability -> examinationAvailability.getPolyclinic()).collect(Collectors.toSet());
+            if(polyclinicRequestDto.getEquipped()) {
+                return polyclinicRepository.findNearest(pointByCoordinates.getX(), pointByCoordinates.getY())
+                        .flatMap(polyclinic -> polyclinic.getAvailabilities().stream())
+                        .filter(examinationAvailability ->
+                                examinationAvailability.getEquipped()
+                                        && examinationAvailability.getExamination() == polyclinicRequestDto.getExaminationType())
+                        .map(ExaminationAvailability::getPolyclinic).collect(Collectors.toSet());
+            }
+            else {
+                return polyclinicRepository.findNearest(pointByCoordinates.getX(), pointByCoordinates.getY())
+                        .flatMap(polyclinic -> polyclinic.getAvailabilities().stream())
+                        .filter(examinationAvailability ->
+                                examinationAvailability.getExamination() == polyclinicRequestDto.getExaminationType())
+                        .map(ExaminationAvailability::getPolyclinic).collect(Collectors.toSet());
+            }
         }
         else {
-//            return polyclinicRepository.getByAddress_CoordinateAndDoctorsSpeciality(pointByCoordinates,
-//                    polyclinicRequestDto.getDoctorSpeciality());
-            return  Collections.EMPTY_SET;
+            if(polyclinicRequestDto.getEquipped()) {
+                return polyclinicRepository.findNearest(pointByCoordinates.getX(), pointByCoordinates.getY())
+                        .flatMap(polyclinic -> polyclinic.getDoctors().stream())
+                        .filter(doctor ->
+                                doctor.getEquipped()
+                                        && doctor.getSpeciality() == polyclinicRequestDto.getDoctorSpeciality())
+                        .map(Doctor::getPolyclinic).collect(Collectors.toSet());
+            }
+            else {
+                return polyclinicRepository.findNearest(pointByCoordinates.getX(), pointByCoordinates.getY())
+                        .flatMap(polyclinic -> polyclinic.getDoctors().stream())
+                        .filter(doctor ->
+                                doctor.getSpeciality() == polyclinicRequestDto.getDoctorSpeciality())
+                        .map(Doctor::getPolyclinic).collect(Collectors.toSet());
+            }
         }
     }
 }

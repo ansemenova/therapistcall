@@ -27,7 +27,11 @@ public class Doctor {
 
     private String secondName;
 
+    @Enumerated(EnumType.STRING)
     private Speciality speciality;
 
     private Boolean equipped;
+
+    @ManyToOne
+    private Polyclinic polyclinic;
 }

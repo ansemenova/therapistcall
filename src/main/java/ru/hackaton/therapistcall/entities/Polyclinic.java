@@ -1,9 +1,6 @@
 package ru.hackaton.therapistcall.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import javax.persistence.*;
@@ -16,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table
+@EqualsAndHashCode(exclude = {"doctors", "availabilities"})
 public class Polyclinic {
 
     @Id
@@ -28,7 +26,7 @@ public class Polyclinic {
     @Embedded
     private Address address;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "polyclinic", fetch = FetchType.EAGER)
     private Set<Doctor> doctors;
 
     @OneToMany(mappedBy = "polyclinic", fetch = FetchType.EAGER)

@@ -21,7 +21,7 @@ public class ExaminationAvailability {
     @SequenceGenerator(name = "examination_id_gen", sequenceName = "examination_id_seq", allocationSize = 1)
     private Long id;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private Examination examination;
 
     private Boolean equipped;

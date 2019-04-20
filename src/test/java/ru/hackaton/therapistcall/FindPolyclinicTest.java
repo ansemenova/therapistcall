@@ -15,6 +15,8 @@ import ru.hackaton.therapistcall.entities.Polyclinic;
 import ru.hackaton.therapistcall.repositories.PolyclinicRepository;
 import ru.hackaton.therapistcall.yandex_integration.YandexGeocodeApi;
 
+import java.util.stream.Stream;
+
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 @RunWith(SpringRunner.class)
@@ -36,7 +38,8 @@ public class FindPolyclinicTest {
     @Test
     @Transactional
     public void findNearestPolyclinic() {
-        System.out.println(polyclinicRepository.findNearest(44.013847,56.320338));
+        Stream<Polyclinic> nearest = polyclinicRepository.findNearest(44.013847, 56.320338);
+        nearest.forEach(pol-> System.out.println(pol));
     }
 
     private void createPolyclinicRepo(String name, String coordinate) {
