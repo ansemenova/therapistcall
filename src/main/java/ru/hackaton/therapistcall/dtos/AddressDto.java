@@ -9,4 +9,6 @@ import lombok.Data;
 public class AddressDto {
 
     private Point point;
+
+    private String address;
 }

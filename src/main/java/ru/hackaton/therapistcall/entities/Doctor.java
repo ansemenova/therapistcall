@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.hackaton.therapistcall.enums.Speciality;
 
 import javax.persistence.*;
 
@@ -26,9 +27,8 @@ public class Doctor {
 
     private String secondName;
 
+    private Speciality speciality;
+
     @ManyToOne
     private Polyclinic polyclinic;
-
-    @OneToOne
-    private Sector sector;
 }

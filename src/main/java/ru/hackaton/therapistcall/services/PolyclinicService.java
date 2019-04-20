@@ -1,10 +1,14 @@
 package ru.hackaton.therapistcall.services;
 
-import ru.hackaton.therapistcall.entities.Sector;
+import ru.hackaton.therapistcall.dtos.PolyclinicRequestDto;
+import ru.hackaton.therapistcall.entities.Polyclinic;
+import ru.hackaton.therapistcall.exception.NotFoundException;
+
+import java.util.List;
 
 public interface PolyclinicService {
 
-    Sector getPolyclinicByAddress(Double x, Double y);
+    List<Polyclinic> getPolyclinicsByCoordinates(PolyclinicRequestDto polyclinicRequestDto);
 
-    Sector getPolyclinicByAddress(String street, String house);
+    List<Polyclinic> getPolyclinicsByAddress(PolyclinicRequestDto polyclinicRequestDto) throws NotFoundException;
 }
