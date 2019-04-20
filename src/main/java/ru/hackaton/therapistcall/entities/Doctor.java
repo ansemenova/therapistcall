@@ -29,6 +29,5 @@ public class Doctor {
 
     private Speciality speciality;
 
-    @ManyToOne
-    private Polyclinic polyclinic;
+    private Boolean equipped;
 }

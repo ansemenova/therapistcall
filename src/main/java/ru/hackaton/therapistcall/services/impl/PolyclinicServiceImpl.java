@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hackaton.therapistcall.TherapistCallApplication;
 import ru.hackaton.therapistcall.dtos.CoordinateDto;
 import ru.hackaton.therapistcall.dtos.CoordinatesDto;
@@ -17,7 +18,8 @@ import ru.hackaton.therapistcall.services.PolyclinicService;
 import ru.hackaton.therapistcall.yandex_integration.YandexGeocodeApi;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -31,13 +33,17 @@ public class PolyclinicServiceImpl implements PolyclinicService {
 
     private final GeometryFactory geometryFactory = new GeometryFactory();
 
-    public List<Polyclinic> getPolyclinicsByCoordinates(PolyclinicRequestDto polyclinicRequestDto) {
+    @Override
+    @Transactional(readOnly = true)
+    public Set<Polyclinic> getPolyclinicsByCoordinates(PolyclinicRequestDto polyclinicRequestDto) {
         CoordinatesDto ownCoordinates = polyclinicRequestDto.getOwnCoordinates();
         Point pointByCoordinates = geometryFactory.createPoint(new Coordinate(ownCoordinates.getLatitude(), ownCoordinates.getLongitude()));
         return getPolyclinics(polyclinicRequestDto, pointByCoordinates);
     }
 
-    public List<Polyclinic> getPolyclinicsByAddress(PolyclinicRequestDto polyclinicRequestDto) throws NotFoundException {
+    @Override
+    @Transactional(readOnly = true)
+    public Set<Polyclinic> getPolyclinicsByAddress(PolyclinicRequestDto polyclinicRequestDto) throws NotFoundException {
         CoordinateDto coordinateDto = yandexGeocodeApi.getCoordinatesByGeocode(polyclinicRequestDto.getAddress(),
                 yandexKeyHolder.getApiKey(), "json");
 
@@ -50,15 +56,16 @@ public class PolyclinicServiceImpl implements PolyclinicService {
         throw new NotFoundException("There is no address");
     }
 
-    private List<Polyclinic> getPolyclinics(PolyclinicRequestDto polyclinicRequestDto, Point pointByCoordinates) {
+
+    private Set<Polyclinic> getPolyclinics(PolyclinicRequestDto polyclinicRequestDto, Point pointByCoordinates) {
         if(polyclinicRequestDto.getDoctorSpeciality() != null) {
-//            return polyclinicRepository.getByAddress_CoordinateAndExaminationsEquals(pointByCoordinates,
-//                    polyclinicRequestDto.getExaminationType());
-            return  Collections.emptyList();
+            return polyclinicRepository.findNearest(pointByCoordinates.getX(), pointByCoordinates.getY()).flatMap(policlinic -> policlinic.getAvailabilities().stream())
+                    .filter(examinationAvailability -> examinationAvailability.getEquipped().equals(polyclinicRequestDto.getEquipped() && examinationAvailability.getExamination() == polyclinicRequestDto.getExaminationType())).map(examinationAvailability -> examinationAvailability.getPolyclinic()).collect(Collectors.toSet());
         }
         else {
-            return polyclinicRepository.getByAddress_CoordinateAndDoctorsSpeciality(pointByCoordinates,
-                    polyclinicRequestDto.getDoctorSpeciality());
+//            return polyclinicRepository.getByAddress_CoordinateAndDoctorsSpeciality(pointByCoordinates,
+//                    polyclinicRequestDto.getDoctorSpeciality());
+            return  Collections.EMPTY_SET;
         }
     }
 }

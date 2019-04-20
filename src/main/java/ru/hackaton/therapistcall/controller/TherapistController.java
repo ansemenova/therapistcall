@@ -13,6 +13,7 @@ import ru.hackaton.therapistcall.services.PolyclinicService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @RestController
@@ -21,7 +22,7 @@ public class TherapistController {
     private final PolyclinicService polyclinicService;
 
     @GetMapping("getNearestPolyclinics")
-    public List<PolyclinicDto> getNearestPolyclinics(@RequestBody PolyclinicRequestDto polyclinicRequestDto) throws NotFoundException {
+    public Set<PolyclinicDto> getNearestPolyclinics(@RequestBody PolyclinicRequestDto polyclinicRequestDto) throws NotFoundException {
 
         if(polyclinicRequestDto.getOwnCoordinates() != null) {
             return PolyclinicMapper.asDtos(polyclinicService.getPolyclinicsByCoordinates(polyclinicRequestDto));

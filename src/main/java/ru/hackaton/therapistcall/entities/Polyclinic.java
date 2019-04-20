@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.hackaton.therapistcall.enums.Examination;
+
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -28,10 +29,8 @@ public class Polyclinic {
     private Address address;
 
     @OneToMany(fetch = FetchType.EAGER)
-    private List<Doctor> doctors;
+    private Set<Doctor> doctors;
 
-//    @ElementCollection(targetClass = Examination.class)
-//    @JoinTable(name = "examinations", joinColumns = @JoinColumn(name = "id"))
-//    @Enumerated(EnumType.STRING)
-//    private List<Examination> examinations;
+    @OneToMany(mappedBy = "polyclinic", fetch = FetchType.EAGER)
+    private Set<ExaminationAvailability> availabilities;
 }

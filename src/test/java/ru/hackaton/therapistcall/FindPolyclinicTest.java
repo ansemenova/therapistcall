@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hackaton.therapistcall.dtos.Position;
 import ru.hackaton.therapistcall.entities.Address;
 import ru.hackaton.therapistcall.entities.Polyclinic;
@@ -33,6 +34,7 @@ public class FindPolyclinicTest {
     }
 
     @Test
+    @Transactional
     public void findNearestPolyclinic() {
         System.out.println(polyclinicRepository.findNearest(44.013847,56.320338));
     }

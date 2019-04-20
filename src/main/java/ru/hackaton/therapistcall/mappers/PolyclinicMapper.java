@@ -5,6 +5,7 @@ import ru.hackaton.therapistcall.dtos.PolyclinicDto;
 import ru.hackaton.therapistcall.entities.Polyclinic;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PolyclinicMapper {
@@ -15,8 +16,8 @@ public class PolyclinicMapper {
         return mapper.map(entity, PolyclinicDto.class);
     }
 
-    public static List<PolyclinicDto> asDtos(List<Polyclinic> entities) {
+    public static Set<PolyclinicDto> asDtos(Set<Polyclinic> entities) {
 
-        return entities.stream().map(PolyclinicMapper::asDto).collect(Collectors.toList());
+        return entities.stream().map(PolyclinicMapper::asDto).collect(Collectors.toSet());
     }
 }
